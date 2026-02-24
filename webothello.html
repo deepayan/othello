@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Othello (Reversi) - Browser</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111;
+      color: #eee;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 10px 0;
+      color: #0f8;
+    }
+
+    #controls {
+      margin: 20px 0;
+      font-size: 1.1em;
+    }
+
+    #board-container {
+      position: relative;
+      width: 480px;
+      height: 480px;
+      margin: 20px auto;
+      border: 6px solid #333;
+      background: #000;
+      box-shadow: 0 0 30px rgba(0, 180, 80, 0.4);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      image-rendering: crisp-edges;
+    }
+
+    #status {
+      font-size: 1.3em;
+      margin: 20px 0;
+      min-height: 1.6em;
+      color: #ffeb3b;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 1.1em;
+      margin: 8px;
+      cursor: pointer;
+      background: #0a5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+
+    button:hover {
+      background: #0c7;
+    }
+
+    label {
+      margin-right: 15px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0, 255, 100, 0.5);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal h2 {
+      margin: 0 0 20px;
+      color: #0f8;
+    }
+
+    .choice-btn {
+      padding: 16px 32px;
+      font-size: 1.3em;
+      margin: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      transition: all 0.2s;
+    }
+
+    .black-btn {
+      background: #000;
+    }
+
+    .black-btn:hover {
+      background: #222;
+      box-shadow: 0 0 20px #444;
+    }
+
+    .white-btn {
+      background: #fff;
+      color: #000;
+    }
+
+    .white-btn:hover {
+      background: #ddd;
+      box-shadow: 0 0 20px #aaa;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Othello (Reversi)</h1>
+
+  <div id="controls">
+    <label>Computer depth (0 = fast/weak – 4 = slow/strong):
+      <input type="range" id="depthSlider" min="0" max="4" value="2" step="1" />
+      <span id="depthValue">2</span>
+    </label><br>
+    <button id="newGameBtn">New Game</button>
+  </div>
+
+  <div id="board-container">
+    <canvas id="board" width="480" height="480"></canvas>
+  </div>
+
+  <div id="status">Click "New Game" to start</div>
+
+  <div id="colorModal" class="modal">
+    <div class="modal-content">
+      <h2>Choose Your Color</h2>
+      <p>Black goes first</p>
+      <button class="choice-btn black-btn" id="chooseBlack">Black (X)</button>
+      <button class="choice-btn white-btn" id="chooseWhite">White (O)</button>
+    </div>
+  </div>
+
+  <script>
+    // ────────────────────────────────────────────────
+    // Constants & State
+    // ────────────────────────────────────────────────
+
+    const EMPTY = 0, BLACK = 1, WHITE = 2;
+    const SIZE = 8;
+    let board = Array(SIZE).fill().map(() => Array(SIZE).fill(EMPTY));
+    let player = BLACK, computer = WHITE, currentPlayer = BLACK;
+    let gameOver = false;
+    let depthLimit = 2;
+    let isComputerThinking = false;
+
+    const directions = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [0, -1], [0, 1],
+      [1, -1], [1, 0], [1, 1]
+    ];
+
+    let flipAnimations = [];
+    let computerFlash = null;           // persists until flips complete
+
+    const FLIP_DURATION = 750;
+
+    // ────────────────────────────────────────────────
+    // Core Logic
+    // ────────────────────────────────────────────────
+
+    function initBoard() {
+      board = Array(SIZE).fill().map(() => Array(SIZE).fill(EMPTY));
+      board[3][3] = WHITE; board[3][4] = BLACK;
+      board[4][3] = BLACK; board[4][4] = WHITE;
+      currentPlayer = BLACK; gameOver = false; isComputerThinking = false;
+      flipAnimations = []; computerFlash = null;
+    }
+
+    function countDisks(color) {
+      return board.flat().filter(c => c === color).length;
+    }
+
+    function isValidMove(r, c, color) {
+      if (r < 0 || r >= SIZE || c < 0 || c >= SIZE || board[r][c] !== EMPTY) return false;
+      const opp = color === BLACK ? WHITE : BLACK;
+      let canFlip = false;
+      for (const [dr, dc] of directions) {
+        let nr = r + dr, nc = c + dc, foundOpp = false;
+        while (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+          const cell = board[nr][nc];
+          if (cell === EMPTY) break;
+          if (cell === opp) foundOpp = true;
+          if (cell === color) {
+            if (foundOpp) canFlip = true;
+            break;
+          }
+          nr += dr; nc += dc;
+        }
+      }
+      return canFlip;
+    }
+
+    function makeMove(r, c, color, animate = true) {
+      if (!isValidMove(r, c, color)) return false;
+
+      board[r][c] = color;
+      const opp = color === BLACK ? WHITE : BLACK;
+
+      const pendingFlips = [];
+
+      for (const [dr, dc] of directions) {
+        let line = [];
+        let nr = r + dr, nc = c + dc;
+        while (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc] === opp) {
+          line.push([nr, nc]);
+          nr += dr; nc += dc;
+        }
+        if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc] === color && line.length > 0) {
+          pendingFlips.push(...line);
+        }
+      }
+
+      if (animate && pendingFlips.length > 0) {
+        pendingFlips.sort((a, b) => {
+          const da = Math.hypot(a[0] - r, a[1] - c);
+          const db = Math.hypot(b[0] - r, b[1] - c);
+          return da - db;
+        });
+
+        pendingFlips.forEach((pos, i) => {
+          const [fr, fc] = pos;
+          flipAnimations.push({
+            r: fr, c: fc,
+            fromColor: opp,
+            toColor: color,
+            delay: i * FLIP_DURATION,
+            startTime: performance.now(),
+            finished: false
+          });
+        });
+      } else {
+        pendingFlips.forEach(([fr, fc]) => board[fr][fc] = color);
+      }
+
+      if (animate && color === computer) {
+        computerFlash = { r, c, startTime: performance.now() };
+      }
+
+      console.log(`Move: ${color === BLACK ? 'Black' : 'White'} → ${String.fromCharCode(65 + c)}${r + 1}`);
+      return true;
+    }
+
+    function hasValidMove(color) {
+      for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (isValidMove(r, c, color)) return true;
+      return false;
+    }
+
+    function gameIsOver() { return !hasValidMove(BLACK) && !hasValidMove(WHITE); }
+
+    function getWinnerText() {
+      const b = countDisks(BLACK), w = countDisks(WHITE);
+      if (b > w) return `Black wins! (${b}–${w})`;
+      if (w > b) return `White wins! (${b}–${w})`;
+      return `Draw (${b}–${w})`;
+    }
+
+    function evaluate() {
+      let score = (countDisks(computer) - countDisks(player)) * 10;
+      [[0, 0], [0, 7], [7, 0], [7, 7]].forEach(([cr, cc]) => {
+        if (board[cr][cc] === computer) score += 1000;
+        if (board[cr][cc] === player) score -= 1000;
+      });
+      return score;
+    }
+
+    function minimax(depth, maximizing) {
+      if (depth === 0 || gameIsOver()) return evaluate();
+      if (maximizing) {
+        let maxEval = -Infinity, has = false;
+        for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (isValidMove(r, c, computer)) {
+          const backup = JSON.parse(JSON.stringify(board));
+          makeMove(r, c, computer, false);
+          const val = minimax(depth - 1, false);
+          board = backup;
+          maxEval = Math.max(maxEval, val); has = true;
+        }
+        return has ? maxEval : evaluate();
+      } else {
+        let minEval = Infinity, has = false;
+        for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (isValidMove(r, c, player)) {
+          const backup = JSON.parse(JSON.stringify(board));
+          makeMove(r, c, player, false);
+          const val = minimax(depth - 1, true);
+          board = backup;
+          minEval = Math.min(minEval, val); has = true;
+        }
+        return has ? minEval : evaluate();
+      }
+    }
+
+    function computerPlay() {
+      if (gameOver || currentPlayer !== computer) return;
+      isComputerThinking = true;
+      updateStatus("Computer thinking...");
+      drawBoard();
+
+      setTimeout(() => {
+        let bestScore = -Infinity, best = { r: -1, c: -1 };
+        for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (isValidMove(r, c, computer)) {
+          const backup = JSON.parse(JSON.stringify(board));
+          makeMove(r, c, computer, false);
+          let score = evaluate() + (depthLimit > 0 ? minimax(depthLimit - 1, false) : 0);
+          board = backup;
+          if (score > bestScore) { bestScore = score; best = { r, c }; }
+        }
+        if (best.r >= 0) {
+          makeMove(best.r, best.c, computer, true);
+          waitForAnimationsThenResume();
+        } else {
+          isComputerThinking = false;
+          currentPlayer = player;
+          drawBoard();
+          checkGameState();
+        }
+      }, 400 + depthLimit * 400);
+    }
+
+    function waitForAnimationsThenResume() {
+      if (flipAnimations.length === 0 && computerFlash === null) {
+        isComputerThinking = false;
+        currentPlayer = player;
+        drawBoard();
+        checkGameState();
+      } else {
+        setTimeout(waitForAnimationsThenResume, 80);
+      }
+    }
+
+    // ────────────────────────────────────────────────
+    // Canvas & Animation
+    // ────────────────────────────────────────────────
+
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const CELL = 480 / SIZE;
+
+    function drawDisc(x, y, color, radiusFactor = 0.44, glow = 0) {
+      ctx.fillStyle = color === BLACK ? '#000' : '#fff';
+      ctx.beginPath();
+      ctx.arc(x, y, CELL * radiusFactor, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (glow > 0) {
+        ctx.shadowColor = color === BLACK ? '#0f0' : '#fff';
+        ctx.shadowBlur = glow * 20;
+        ctx.strokeStyle = color === BLACK ? '#0f8' : '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    function drawBoard(timestamp = performance.now()) {
+      ctx.fillStyle = '#0a3d0a';
+      ctx.fillRect(0, 0, 480, 480);
+
+      ctx.strokeStyle = '#084'; ctx.lineWidth = 1;
+      for (let i = 0; i <= SIZE; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, 480);
+        ctx.moveTo(0, i * CELL); ctx.lineTo(480, i * CELL);
+        ctx.stroke();
+      }
+
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (board[r][c] === EMPTY) continue;
+          const x = c * CELL + CELL / 2;
+          const y = r * CELL + CELL / 2;
+          drawDisc(x, y, board[r][c]);
+        }
+      }
+
+      // Flip animations
+      flipAnimations = flipAnimations.filter(anim => {
+        const elapsed = timestamp - anim.startTime - anim.delay;
+        if (elapsed < 0) return true;
+        if (elapsed >= FLIP_DURATION) {
+          board[anim.r][anim.c] = anim.toColor;
+          return false;
+        }
+
+        const progress = elapsed / FLIP_DURATION;
+        const x = anim.c * CELL + CELL / 2;
+        const y = anim.r * CELL + CELL / 2;
+
+        const scale = 0.44 * (1 - Math.abs(Math.sin(progress * Math.PI)) * 0.6);
+        const midColor = progress < 0.5 ? anim.fromColor : anim.toColor;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(progress * Math.PI);
+        drawDisc(0, 0, midColor, scale);
+        ctx.restore();
+
+        return true;
+      });
+
+      // Computer move highlight — red until flips complete
+      if (computerFlash) {
+        const x = computerFlash.c * CELL + CELL / 2;
+        const y = computerFlash.r * CELL + CELL / 2;
+
+        // Pulsing red glow
+        const progress = (timestamp - computerFlash.startTime) / 2000; // long enough to cover flips
+        const glowIntensity = Math.sin(progress * Math.PI * 5) * 0.8 + 0.2;
+        ctx.fillStyle = `rgba(255, 0, 0, ${glowIntensity})`;
+        ctx.beginPath();
+        ctx.arc(x, y, CELL * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner disc (still shows current color but with red tint)
+        drawDisc(x, y, board[computerFlash.r][computerFlash.c], 0.44, glowIntensity * 15);
+
+        // Clear only when no more flips
+        if (flipAnimations.length === 0) {
+          computerFlash = null;
+        }
+      }
+
+      // User highlights — only after all animations done
+      if (currentPlayer === player && !isComputerThinking && !gameOver && flipAnimations.length === 0) {
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = '#ffeb3b';
+        for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+          if (isValidMove(r, c, player)) {
+            ctx.fillRect(c * CELL + 4, r * CELL + 4, CELL - 8, CELL - 8);
+          }
+        }
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    requestAnimationFrame(function loop(ts) {
+      drawBoard(ts);
+      requestAnimationFrame(loop);
+    });
+
+    // ────────────────────────────────────────────────
+    // Game Flow & Events
+    // ────────────────────────────────────────────────
+
+    function updateStatus(msg) {
+      document.getElementById('status').innerText = msg;
+    }
+
+    function checkGameState() {
+      if (gameIsOver()) {
+        gameOver = true;
+        updateStatus(getWinnerText());
+        return;
+      }
+
+      if (!hasValidMove(currentPlayer)) {
+        const who = currentPlayer === BLACK ? 'Black' : 'White';
+        updateStatus(`${who} passes (no moves)`);
+        setTimeout(() => {
+          currentPlayer = currentPlayer === BLACK ? WHITE : BLACK;
+          drawBoard();
+          if (currentPlayer === computer) computerPlay();
+          else {
+            updateStatus(`Your turn (${player === BLACK ? 'Black' : 'White'})`);
+            drawBoard();
+          }
+          checkGameState();
+        }, 1400);
+        return;
+      }
+
+      if (currentPlayer === computer) {
+        computerPlay();
+      } else {
+        updateStatus(`Your turn (${player === BLACK ? 'Black' : 'White'})`);
+        drawBoard();
+      }
+    }
+
+    canvas.addEventListener('click', e => {
+      if (gameOver || currentPlayer !== player || isComputerThinking) return;
+      const rect = canvas.getBoundingClientRect();
+      const col = Math.floor((e.clientX - rect.left) / CELL);
+      const row = Math.floor((e.clientY - rect.top) / CELL);
+      if (makeMove(row, col, player, true)) {
+        drawBoard();
+        currentPlayer = computer;
+        checkGameState();
+      }
+    });
+
+    document.getElementById('newGameBtn').onclick = () => {
+      document.getElementById('colorModal').style.display = 'flex';
+    };
+
+    document.getElementById('chooseBlack').onclick = () => {
+      player = BLACK;
+      computer = WHITE;
+      document.getElementById('colorModal').style.display = 'none';
+      initBoard();
+      drawBoard();
+      checkGameState();
+    };
+
+    document.getElementById('chooseWhite').onclick = () => {
+      player = WHITE;
+      computer = BLACK;
+      document.getElementById('colorModal').style.display = 'none';
+      initBoard();
+      drawBoard();
+      checkGameState();
+    };
+
+    document.getElementById('depthSlider').oninput = e => {
+      depthLimit = +e.target.value;
+      document.getElementById('depthValue').innerText = depthLimit;
+    };
+
+    drawBoard();
+  </script>
+</body>
+
+</html>
