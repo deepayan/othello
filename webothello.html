@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deepayan's Original Othello (Reversi) - Browser</title>
+  <title>Othello (Reversi)</title>
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -32,9 +32,14 @@
       margin: 20px auto;
       border: 6px solid #333;
       background: #000;
-      box-shadow: 0 0 30px rgba(0, 180, 80, 0.4);
       border-radius: 8px;
       overflow: hidden;
+      transition: border-color 0.4s, box-shadow 0.4s;
+    }
+
+    #board-container.player-move {
+      border-color: #ffeb3b !important;
+      box-shadow: 0 0 50px #ffeb3b !important;
     }
 
     canvas {
@@ -49,6 +54,40 @@
       margin: 20px 0;
       min-height: 1.6em;
       color: #ffeb3b;
+    }
+
+    #turnOverlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    #turnMessage {
+      font-size: 72px;
+      font-weight: bold;
+      padding: 25px 70px;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #ffeb3b;
+      text-shadow: 0 0 30px #ff0;
+      border: 6px solid #ffeb3b;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.08);
+      }
     }
 
     button {
@@ -74,55 +113,37 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
       justify-content: center;
       align-items: center;
     }
 
     .modal-content {
       background: #222;
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 0 40px rgba(0, 255, 100, 0.5);
+      padding: 40px;
+      border-radius: 15px;
       text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-
-    .modal h2 {
-      margin: 0 0 20px;
-      color: #0f8;
+      box-shadow: 0 0 50px rgba(0, 255, 100, 0.6);
     }
 
     .choice-btn {
-      padding: 16px 32px;
-      font-size: 1.3em;
-      margin: 15px;
-      cursor: pointer;
+      padding: 18px 40px;
+      font-size: 1.5em;
+      margin: 20px;
       border: none;
-      border-radius: 8px;
-      color: white;
-      transition: all 0.2s;
+      border-radius: 10px;
+      cursor: pointer;
     }
 
     .black-btn {
-      background: #000;
-    }
-
-    .black-btn:hover {
-      background: #222;
-      box-shadow: 0 0 20px #444;
+      background: #111;
+      color: white;
     }
 
     .white-btn {
-      background: #fff;
-      color: #000;
-    }
-
-    .white-btn:hover {
-      background: #ddd;
-      box-shadow: 0 0 20px #aaa;
+      background: white;
+      color: black;
     }
   </style>
 </head>
@@ -141,6 +162,9 @@
 
   <div id="board-container">
     <canvas id="board" width="480" height="480"></canvas>
+    <div id="turnOverlay">
+      <div id="turnMessage"></div>
+    </div>
   </div>
 
   <div id="status">Click "New Game" to start</div>
@@ -167,16 +191,23 @@
     let depthLimit = 2;
     let isComputerThinking = false;
 
-    const directions = [
-      [-1, -1], [-1, 0], [-1, 1],
-      [0, -1], [0, 1],
-      [1, -1], [1, 0], [1, 1]
-    ];
+    const directions = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
     let flipAnimations = [];
-    let computerFlash = null;           // persists until flips complete
+    let computerFlash = null;
 
     const FLIP_DURATION = 750;
+
+    // DOM
+    const boardContainer = document.getElementById('board-container');
+    const turnOverlay = document.getElementById('turnOverlay');
+    const turnMessage = document.getElementById('turnMessage');
+
+    function showTurnMessage(text, duration = 1000) {
+      turnMessage.textContent = text;
+      turnOverlay.style.display = 'flex';
+      setTimeout(() => { turnOverlay.style.display = 'none'; }, duration);
+    }
 
     // ────────────────────────────────────────────────
     // Core Logic
@@ -188,11 +219,10 @@
       board[4][3] = BLACK; board[4][4] = WHITE;
       currentPlayer = BLACK; gameOver = false; isComputerThinking = false;
       flipAnimations = []; computerFlash = null;
+      boardContainer.classList.remove('player-move');
     }
 
-    function countDisks(color) {
-      return board.flat().filter(c => c === color).length;
-    }
+    function countDisks(color) { return board.flat().filter(c => c === color).length; }
 
     function isValidMove(r, c, color) {
       if (r < 0 || r >= SIZE || c < 0 || c >= SIZE || board[r][c] !== EMPTY) return false;
@@ -221,7 +251,6 @@
       const opp = color === BLACK ? WHITE : BLACK;
 
       const pendingFlips = [];
-
       for (const [dr, dc] of directions) {
         let line = [];
         let nr = r + dr, nc = c + dc;
@@ -235,12 +264,7 @@
       }
 
       if (animate && pendingFlips.length > 0) {
-        pendingFlips.sort((a, b) => {
-          const da = Math.hypot(a[0] - r, a[1] - c);
-          const db = Math.hypot(b[0] - r, b[1] - c);
-          return da - db;
-        });
-
+        pendingFlips.sort((a, b) => Math.hypot(a[0] - r, a[1] - c) - Math.hypot(b[0] - r, b[1] - c));
         pendingFlips.forEach((pos, i) => {
           const [fr, fc] = pos;
           flipAnimations.push({
@@ -248,17 +272,14 @@
             fromColor: opp,
             toColor: color,
             delay: i * FLIP_DURATION,
-            startTime: performance.now(),
-            finished: false
+            startTime: performance.now()
           });
         });
       } else {
         pendingFlips.forEach(([fr, fc]) => board[fr][fc] = color);
       }
 
-      if (animate && color === computer) {
-        computerFlash = { r, c, startTime: performance.now() };
-      }
+      if (animate && color === computer) computerFlash = { r, c, startTime: performance.now() };
 
       console.log(`Move: ${color === BLACK ? 'Black' : 'White'} → ${String.fromCharCode(65 + c)}${r + 1}`);
       return true;
@@ -312,10 +333,119 @@
       }
     }
 
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const CELL = 480 / SIZE;
+
+    function drawDisc(x, y, color, radiusFactor = 0.44, glow = 0) {
+      ctx.fillStyle = color === BLACK ? '#000' : '#fff';
+      ctx.beginPath();
+      ctx.arc(x, y, CELL * radiusFactor, 0, Math.PI * 2);
+      ctx.fill();
+      if (glow > 0) {
+        ctx.shadowColor = color === BLACK ? '#0f0' : '#fff';
+        ctx.shadowBlur = glow * 20;
+        ctx.strokeStyle = color === BLACK ? '#0f8' : '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    function drawBoard(timestamp = performance.now()) {
+      ctx.fillStyle = '#0a3d0a';
+      ctx.fillRect(0, 0, 480, 480);
+
+      ctx.strokeStyle = '#084'; ctx.lineWidth = 1;
+      for (let i = 0; i <= SIZE; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, 480);
+        ctx.moveTo(0, i * CELL); ctx.lineTo(480, i * CELL);
+        ctx.stroke();
+      }
+
+      for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+        if (board[r][c] === EMPTY) continue;
+        const x = c * CELL + CELL / 2;
+        const y = r * CELL + CELL / 2;
+        drawDisc(x, y, board[r][c]);
+      }
+
+      flipAnimations = flipAnimations.filter(anim => {
+        const elapsed = timestamp - anim.startTime - anim.delay;
+        if (elapsed < 0) return true;
+        if (elapsed >= FLIP_DURATION) {
+          board[anim.r][anim.c] = anim.toColor;
+          return false;
+        }
+        const progress = elapsed / FLIP_DURATION;
+        const x = anim.c * CELL + CELL / 2;
+        const y = anim.r * CELL + CELL / 2;
+        const scale = 0.44 * (1 - Math.abs(Math.sin(progress * Math.PI)) * 0.6);
+        const midColor = progress < 0.5 ? anim.fromColor : anim.toColor;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(progress * Math.PI);
+        drawDisc(0, 0, midColor, scale);
+        ctx.restore();
+        return true;
+      });
+
+      if (computerFlash) {
+        const progress = (timestamp - computerFlash.startTime) / 800;
+        if (progress >= 1) computerFlash = null;
+        else {
+          const x = computerFlash.c * CELL + CELL / 2;
+          const y = computerFlash.r * CELL + CELL / 2;
+          const glow = Math.sin(progress * Math.PI * 4) * 0.7 + 0.3;
+          drawDisc(x, y, board[computerFlash.r][computerFlash.c], 0.48, glow * 18);
+        }
+      }
+
+      if (currentPlayer === player && !isComputerThinking && !gameOver && flipAnimations.length === 0) {
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = '#ffeb3b';
+        for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+          if (isValidMove(r, c, player)) ctx.fillRect(c * CELL + 4, r * CELL + 4, CELL - 8, CELL - 8);
+        }
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    requestAnimationFrame(function loop(ts) { drawBoard(ts); requestAnimationFrame(loop); });
+
+    // Player move
+    canvas.addEventListener('click', e => {
+      if (gameOver || currentPlayer !== player || isComputerThinking) return;
+      const rect = canvas.getBoundingClientRect();
+      const col = Math.floor((e.clientX - rect.left) / CELL);
+      const row = Math.floor((e.clientY - rect.top) / CELL);
+
+      if (makeMove(row, col, player, true)) {
+        boardContainer.classList.add('player-move');
+        drawBoard();
+
+        // Wait for animation finish → show "Computer's Turn"
+        const check = setInterval(() => {
+          if (flipAnimations.length === 0) {
+            clearInterval(check);
+            boardContainer.classList.remove('player-move');
+            showTurnMessage("Computer's Turn", 1000);
+            setTimeout(() => {
+              currentPlayer = computer;
+              computerPlay();
+            }, 1000);
+          }
+        }, 80);
+      }
+    });
+
     function computerPlay() {
       if (gameOver || currentPlayer !== computer) return;
       isComputerThinking = true;
       updateStatus("Computer thinking...");
+      boardContainer.classList.remove('player-move');
       drawBoard();
 
       setTimeout(() => {
@@ -340,133 +470,20 @@
     }
 
     function waitForAnimationsThenResume() {
-      if (flipAnimations.length === 0 && computerFlash === null) {
+      if (flipAnimations.length === 0) {
         isComputerThinking = false;
-        currentPlayer = player;
-        drawBoard();
-        checkGameState();
+        showTurnMessage("Your Turn", 1000);
+        setTimeout(() => {
+          currentPlayer = player;
+          drawBoard();
+          checkGameState();
+        }, 1000);
       } else {
         setTimeout(waitForAnimationsThenResume, 80);
       }
     }
 
-    // ────────────────────────────────────────────────
-    // Canvas & Animation
-    // ────────────────────────────────────────────────
-
-    const canvas = document.getElementById('board');
-    const ctx = canvas.getContext('2d');
-    const CELL = 480 / SIZE;
-
-    function drawDisc(x, y, color, radiusFactor = 0.44, glow = 0) {
-      ctx.fillStyle = color === BLACK ? '#000' : '#fff';
-      ctx.beginPath();
-      ctx.arc(x, y, CELL * radiusFactor, 0, Math.PI * 2);
-      ctx.fill();
-
-      if (glow > 0) {
-        ctx.shadowColor = color === BLACK ? '#0f0' : '#fff';
-        ctx.shadowBlur = glow * 20;
-        ctx.strokeStyle = color === BLACK ? '#0f8' : '#fff';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-      }
-    }
-
-    function drawBoard(timestamp = performance.now()) {
-      ctx.fillStyle = '#0a3d0a';
-      ctx.fillRect(0, 0, 480, 480);
-
-      ctx.strokeStyle = '#084'; ctx.lineWidth = 1;
-      for (let i = 0; i <= SIZE; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, 480);
-        ctx.moveTo(0, i * CELL); ctx.lineTo(480, i * CELL);
-        ctx.stroke();
-      }
-
-      for (let r = 0; r < SIZE; r++) {
-        for (let c = 0; c < SIZE; c++) {
-          if (board[r][c] === EMPTY) continue;
-          const x = c * CELL + CELL / 2;
-          const y = r * CELL + CELL / 2;
-          drawDisc(x, y, board[r][c]);
-        }
-      }
-
-      // Flip animations
-      flipAnimations = flipAnimations.filter(anim => {
-        const elapsed = timestamp - anim.startTime - anim.delay;
-        if (elapsed < 0) return true;
-        if (elapsed >= FLIP_DURATION) {
-          board[anim.r][anim.c] = anim.toColor;
-          return false;
-        }
-
-        const progress = elapsed / FLIP_DURATION;
-        const x = anim.c * CELL + CELL / 2;
-        const y = anim.r * CELL + CELL / 2;
-
-        const scale = 0.44 * (1 - Math.abs(Math.sin(progress * Math.PI)) * 0.6);
-        const midColor = progress < 0.5 ? anim.fromColor : anim.toColor;
-
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(progress * Math.PI);
-        drawDisc(0, 0, midColor, scale);
-        ctx.restore();
-
-        return true;
-      });
-
-      // Computer move highlight — red until flips complete
-      if (computerFlash) {
-        const x = computerFlash.c * CELL + CELL / 2;
-        const y = computerFlash.r * CELL + CELL / 2;
-
-        // Pulsing red glow
-        const progress = (timestamp - computerFlash.startTime) / 2000; // long enough to cover flips
-        const glowIntensity = Math.sin(progress * Math.PI * 5) * 0.8 + 0.2;
-        ctx.fillStyle = `rgba(255, 0, 0, ${glowIntensity})`;
-        ctx.beginPath();
-        ctx.arc(x, y, CELL * 0.55, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Inner disc (still shows current color but with red tint)
-        drawDisc(x, y, board[computerFlash.r][computerFlash.c], 0.44, glowIntensity * 15);
-
-        // Clear only when no more flips
-        if (flipAnimations.length === 0) {
-          computerFlash = null;
-        }
-      }
-
-      // User highlights — only after all animations done
-      if (currentPlayer === player && !isComputerThinking && !gameOver && flipAnimations.length === 0) {
-        ctx.globalAlpha = 0.35;
-        ctx.fillStyle = '#ffeb3b';
-        for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-          if (isValidMove(r, c, player)) {
-            ctx.fillRect(c * CELL + 4, r * CELL + 4, CELL - 8, CELL - 8);
-          }
-        }
-        ctx.globalAlpha = 1;
-      }
-    }
-
-    requestAnimationFrame(function loop(ts) {
-      drawBoard(ts);
-      requestAnimationFrame(loop);
-    });
-
-    // ────────────────────────────────────────────────
-    // Game Flow & Events
-    // ────────────────────────────────────────────────
-
-    function updateStatus(msg) {
-      document.getElementById('status').innerText = msg;
-    }
+    function updateStatus(msg) { document.getElementById('status').innerText = msg; }
 
     function checkGameState() {
       if (gameIsOver()) {
@@ -482,11 +499,7 @@
           currentPlayer = currentPlayer === BLACK ? WHITE : BLACK;
           drawBoard();
           if (currentPlayer === computer) computerPlay();
-          else {
-            updateStatus(`Your turn (${player === BLACK ? 'Black' : 'White'})`);
-            drawBoard();
-          }
-          checkGameState();
+          else checkGameState();
         }, 1400);
         return;
       }
@@ -499,38 +512,18 @@
       }
     }
 
-    canvas.addEventListener('click', e => {
-      if (gameOver || currentPlayer !== player || isComputerThinking) return;
-      const rect = canvas.getBoundingClientRect();
-      const col = Math.floor((e.clientX - rect.left) / CELL);
-      const row = Math.floor((e.clientY - rect.top) / CELL);
-      if (makeMove(row, col, player, true)) {
-        drawBoard();
-        currentPlayer = computer;
-        checkGameState();
-      }
-    });
-
-    document.getElementById('newGameBtn').onclick = () => {
-      document.getElementById('colorModal').style.display = 'flex';
-    };
+    document.getElementById('newGameBtn').onclick = () => document.getElementById('colorModal').style.display = 'flex';
 
     document.getElementById('chooseBlack').onclick = () => {
-      player = BLACK;
-      computer = WHITE;
+      player = BLACK; computer = WHITE;
       document.getElementById('colorModal').style.display = 'none';
-      initBoard();
-      drawBoard();
-      checkGameState();
+      initBoard(); drawBoard(); checkGameState();
     };
 
     document.getElementById('chooseWhite').onclick = () => {
-      player = WHITE;
-      computer = BLACK;
+      player = WHITE; computer = BLACK;
       document.getElementById('colorModal').style.display = 'none';
-      initBoard();
-      drawBoard();
-      checkGameState();
+      initBoard(); drawBoard(); checkGameState();
     };
 
     document.getElementById('depthSlider').oninput = e => {
