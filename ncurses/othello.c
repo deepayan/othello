@@ -295,48 +295,31 @@ void input(void)
 
 void wleft()
 {
-  int ii,jj,kk;
-  ii=i; jj=j;
-
-  if (a[ii][jj-1]!='r') return;
-
-  kk=jj-1;
-  while(a[ii][kk]=='r')kk--;
-
-  if (a[ii][kk]=='b') return;
-
+  int ii = i, jj = j, kk;
+  if (a[ii][jj-1] != 'r') return;
+  kk = jj-1;
+  while (a[ii][kk] == 'r') kk--;
+  if (a[ii][kk] == 'b') return;
   while(jj>=kk)
     {
-      a[ii][jj]='|';
+      a[ii][jj] = '|';
       show();
-      a[ii][jj]='w';
+      a[ii][jj] = 'w';
       show();
       jj--;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
 
-
-
-
-
-
-
 void wright()
 {
-  int ii,jj,kk;
-
-  ii=i; jj=j;
-  if (a[ii][jj+1]!='r') return;
-
+  int ii = i, jj = j, kk;
+  if (a[ii][jj+1] != 'r') return;
   kk=jj+1;
-  while(a[ii][kk]=='r')kk++;
-
-  if (a[ii][kk]=='b') return;
-
-  while(jj<=kk)
+  while(a[ii][kk] == 'r')kk++;
+  if (a[ii][kk] == 'b') return;
+  while(jj <= kk)
     {
       a[ii][jj]='|';
       show();
@@ -344,29 +327,17 @@ void wright()
       show();
       jj++;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
 
-
-
-
-
-
-
 void wup()
 {
-  int ii,jj,kk;
-  ii=i; jj=j;
-
-  if (a[ii-1][jj]!='r') return;
-
+  int ii = i, jj = j, kk;
+  if (a[ii-1][jj] != 'r') return;
   kk=ii-1;
-  while(a[kk][jj]=='r')kk--;
-
-  if (a[kk][jj]=='b') return;
-
+  while(a[kk][jj] == 'r')kk--;
+  if (a[kk][jj] == 'b') return;
   while(ii>=kk)
     {
       a[ii][jj]='|';
@@ -375,28 +346,17 @@ void wup()
       show();
       ii--;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
 
-
-
-
-
-
 void wdown()
 {
-  int ii,jj,kk;
-  ii=i; jj=j;
-
-  if (a[ii+1][jj]!='r') return;
-
+  int ii = i, jj = j, kk;
+  if (a[ii+1][jj] != 'r') return;
   kk=ii+1;
-  while(a[kk][jj]=='r')kk++;
-
-  if (a[kk][jj]=='b') return;
-
+  while(a[kk][jj] == 'r')kk++;
+  if (a[kk][jj] == 'b') return;
   while(ii<=kk)
     {
       a[ii][jj]='|';
@@ -405,28 +365,17 @@ void wdown()
       show();
       ii++;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
-
-
-
-
-
 
 void wLD()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
-  if (a[ii+1][jj-1]!='r') return;
-
-  kk=jj-1;ll=ii+1;
-  while(a[ll][kk]=='r'){kk--;ll++;}
-
-  if (a[ll][kk]=='b') return;
-
+  int ii = i, jj = j, kk, ll;
+  if (a[ii+1][jj-1] != 'r') return;
+  kk = jj-1;ll=ii+1;
+  while(a[ll][kk] == 'r'){kk--;ll++;}
+  if (a[ll][kk] == 'b') return;
   while(jj>=kk)
     {
       a[ii][jj]='|';
@@ -436,31 +385,17 @@ void wLD()
       jj--;
       ii++;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
-
-
-
-
-
-
-
-
 
 void wLU()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk, ll;
   if (a[ii-1][jj-1]!='r') return;
-
   kk=jj-1;ll=ii-1;
-  while(a[ll][kk]=='r'){kk--;ll--;}
-
-  if (a[ll][kk]=='b') return;
-
+  while(a[ll][kk] == 'r'){kk--;ll--;}
+  if (a[ll][kk] == 'b') return;
   while(jj>=kk)
     {
       a[ii][jj]='|';
@@ -470,27 +405,17 @@ void wLU()
       jj--;
       ii--;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
 
-
-
-
-
 void wRU()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk, ll;
   if (a[ii-1][jj+1]!='r') return;
-
   kk=jj+1;ll=ii-1;
-  while(a[ll][kk]=='r'){kk++;ll--;}
-
-  if (a[ll][kk]=='b') return;
-
+  while(a[ll][kk] == 'r'){kk++;ll--;}
+  if (a[ll][kk] == 'b') return;
   while(jj<=kk)
     {
       a[ii][jj]='|';
@@ -500,29 +425,17 @@ void wRU()
       jj++;
       ii--;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
 
-
-
-
-
-
-
 void wRD()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk, ll;
   if (a[ii+1][jj+1]!='r') return;
-
   kk=jj+1;ll=ii+1;
-  while(a[ll][kk]=='r'){kk++;ll++;}
-
-  if (a[ll][kk]=='b') return;
-
+  while(a[ll][kk] == 'r'){kk++;ll++;}
+  if (a[ll][kk] == 'b') return;
   while(jj<=kk)
     {
       a[ii][jj]='|';
@@ -532,29 +445,17 @@ void wRD()
       jj++;
       ii++;
     }
-
   vi=1;
   return;
 }
 
-
-
-
-
-
-
 void rleft()
 {
-  int ii,jj,kk;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk;
   if (a[ii][jj-1]!='w') return;
-
   kk=jj-1;
-  while(a[ii][kk]=='w')kk--;
-
-  if (a[ii][kk]=='b') return;
-
+  while(a[ii][kk] == 'w')kk--;
+  if (a[ii][kk] == 'b') return;
   while(jj>=kk)
     {
       a[ii][jj]='|';
@@ -563,29 +464,18 @@ void rleft()
       show();
       jj--;
     }
-
   vi=1;
   return;
 }
-
-
-
-
-
 
 
 void rright()
 {
-  int ii,jj,kk;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk;
   if (a[ii][jj+1]!='w') return;
-
   kk=jj+1;
-  while(a[ii][kk]=='w')kk++;
-
-  if (a[ii][kk]=='b') return;
-
+  while(a[ii][kk] == 'w')kk++;
+  if (a[ii][kk] == 'b') return;
   while(jj<=kk)
     {
       a[ii][jj]='|';
@@ -594,29 +484,17 @@ void rright()
       show();
       jj++;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
 
-
-
-
-
-
-
 void rup()
 {
-  int ii,jj,kk;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk;
   if (a[ii-1][jj]!='w') return;
-
   kk=ii-1;
-  while(a[kk][jj]=='w')kk--;
-
-  if (a[kk][jj]=='b') return;
-
+  while(a[kk][jj] == 'w')kk--;
+  if (a[kk][jj] == 'b') return;
   while(ii>=kk)
     {
       a[ii][jj]='|';
@@ -625,28 +503,17 @@ void rup()
       show();
       ii--;
     }
-
   vi=1;
   return;
 }
 
-
-
-
-
-
 void rdown()
 {
-  int ii,jj,kk;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk;
   if (a[ii+1][jj]!='w') return;
-
   kk=ii+1;
-  while(a[kk][jj]=='w')kk++;
-
-  if (a[kk][jj]=='b') return;
-
+  while(a[kk][jj] == 'w')kk++;
+  if (a[kk][jj] == 'b') return;
   while(ii<=kk)
     {
       a[ii][jj]='|';
@@ -655,37 +522,17 @@ void rdown()
       show();
       ii++;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void rLD()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk, ll;
   if (a[ii+1][jj-1]!='w') return;
-
   kk=jj-1;ll=ii+1;
-  while(a[ll][kk]=='w'){kk--;ll++;}
-
-  if (a[ll][kk]=='b') return;
-
+  while(a[ll][kk] == 'w'){kk--;ll++;}
+  if (a[ll][kk] == 'b') return;
   while(jj>=kk)
     {
       a[ii][jj]='|';
@@ -695,31 +542,17 @@ void rLD()
       jj--;
       ii++;
     }
-
-  vi=1;
+  vi = 1;
   return;
 }
-
-
-
-
-
-
-
-
 
 void rLU()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk, ll;
   if (a[ii-1][jj-1]!='w') return;
-
   kk=jj-1;ll=ii-1;
-  while(a[ll][kk]=='w'){kk--;ll--;}
-
-  if (a[ll][kk]=='b') return;
-
+  while(a[ll][kk] == 'w'){kk--;ll--;}
+  if (a[ll][kk] == 'b') return;
   while(jj>=kk)
     {
       a[ii][jj]='|';
@@ -729,27 +562,17 @@ void rLU()
       jj--;
       ii--;
     }
-
   vi=1;
   return;
 }
 
-
-
-
-
 void rRU()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk, ll;
   if (a[ii-1][jj+1]!='w') return;
-
   kk=jj+1;ll=ii-1;
-  while(a[ll][kk]=='w'){kk++;ll--;}
-
-  if (a[ll][kk]=='b') return;
-
+  while(a[ll][kk] == 'w'){kk++;ll--;}
+  if (a[ll][kk] == 'b') return;
   while(jj<=kk)
     {
       a[ii][jj]='|';
@@ -759,29 +582,17 @@ void rRU()
       jj++;
       ii--;
     }
-
   vi=1;
   return;
 }
 
-
-
-
-
-
-
 void rRD()
 {
-  int ii,jj,kk,ll;
-  ii=i; jj=j;
-
+  int ii = i, jj = j, kk, ll;
   if (a[ii+1][jj+1]!='w') return;
-
   kk=jj+1;ll=ii+1;
-  while(a[ll][kk]=='w'){kk++;ll++;}
-
-  if (a[ll][kk]=='b') return;
-
+  while(a[ll][kk] == 'w'){kk++;ll++;}
+  if (a[ll][kk] == 'b') return;
   while(jj<=kk)
     {
       a[ii][jj]='|';
@@ -791,13 +602,9 @@ void rRD()
       jj++;
       ii++;
     }
-
   vi=1;
   return;
 }
-
-
-
 
 
 
@@ -814,9 +621,9 @@ void whitePlay()
 
   for (i=1;i<=8;i++)
     for (j=1;j<=8;j++)
-      if(wValid(i,j,hh)==1) vi=1;
+      if(wValid(i,j,hh) == 1) vi=1;
 
-  if (vi==0) 
+  if (vi == 0) 
     {
       wclear(w1);
       wprintw(w1,"No valid move");
@@ -844,7 +651,7 @@ void whitePlay()
   wLD();
   wRD();
 
-  if (vi==0)
+  if (vi == 0)
     {
       wclear(w1);
       wprintw(w1,"Invalid");
@@ -872,9 +679,9 @@ void blackPlay()
 
   for (i=1;i<=8;i++)
     for (j=1;j<=8;j++)
-      if(rValid(i,j,hh)==1) vi=1;
+      if(rValid(i,j,hh) == 1) vi=1;
 
-  if (vi==0) 
+  if (vi == 0) 
     {
       wclear(w1);
       wprintw(w1,"No valid move");
@@ -900,7 +707,7 @@ void blackPlay()
   rLD();
   rRD();
 
-  if (vi==0)
+  if (vi == 0)
     {
       wclear(w1);
       wprintw(w1,"Invalid");
@@ -920,55 +727,55 @@ int rValid(int m,int n,struct table d)
 {
   int ii,jj;
 
-  if (d.x[m][n]=='b')
+  if (d.x[m][n] == 'b')
     {
       ii=m;jj=n-1;/*left*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){jj--;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){jj--;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
       ii=m;jj=n+1;/*right*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){jj++;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){jj++;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
       ii=m-1;jj=n;/*up*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){ii--;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){ii--;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
       ii=m+1;jj=n;/*down*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){ii++;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){ii++;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
       ii=m+1;jj=n-1;/*LD*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){jj--;ii++;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){jj--;ii++;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
       ii=m-1;jj=n-1;/*LU*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){jj--;ii--;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){jj--;ii--;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
       ii=m+1;jj=n+1;/*RD*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){jj++;ii++;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){jj++;ii++;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
       ii=m-1;jj=n+1;/*RU*/
-      if (d.x[ii][jj]=='w')
+      if (d.x[ii][jj] == 'w')
 	{
-	  while(d.x[ii][jj]=='w'){jj++;ii--;}
-	  if(d.x[ii][jj]=='r')return 1;
+	  while(d.x[ii][jj] == 'w'){jj++;ii--;}
+	  if(d.x[ii][jj] == 'r')return 1;
 	}
     }
 
@@ -987,55 +794,55 @@ int wValid(int m,int n,struct table d)
 {
   int ii,jj;
 
-  if (d.x[m][n]=='b')
+  if (d.x[m][n] == 'b')
     {
       ii=m;jj=n-1;/*left*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){jj--;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){jj--;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
       ii=m;jj=n+1;/*right*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){jj++;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){jj++;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
       ii=m-1;jj=n;/*up*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){ii--;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){ii--;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
       ii=m+1;jj=n;/*down*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){ii++;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){ii++;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
       ii=m+1;jj=n-1;/*LD*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){jj--;ii++;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){jj--;ii++;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
       ii=m-1;jj=n-1;/*LU*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){jj--;ii--;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){jj--;ii--;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
       ii=m+1;jj=n+1;/*RD*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){jj++;ii++;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){jj++;ii++;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
       ii=m-1;jj=n+1;/*RU*/
-      if (d.x[ii][jj]=='r')
+      if (d.x[ii][jj] == 'r')
 	{
-	  while(d.x[ii][jj]=='r'){jj++;ii--;}
-	  if(d.x[ii][jj]=='w')return 1;
+	  while(d.x[ii][jj] == 'r'){jj++;ii--;}
+	  if(d.x[ii][jj] == 'w')return 1;
 	}
     }
 
@@ -1060,11 +867,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii][jj-1]=='w') 
+  if (d.x[ii][jj-1] == 'w') 
     {
       kk=jj-1;
-      while(d.x[ii][kk]=='w')kk--;
-      if (d.x[ii][kk]=='r')
+      while(d.x[ii][kk] == 'w')kk--;
+      if (d.x[ii][kk] == 'r')
 	while(jj>=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1075,11 +882,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii][jj+1]=='w')
+  if (d.x[ii][jj+1] == 'w')
     {
       kk=jj+1;
-      while(d.x[ii][kk]=='w')kk++;
-      if (d.x[ii][kk]=='r')
+      while(d.x[ii][kk] == 'w')kk++;
+      if (d.x[ii][kk] == 'r')
 	while(jj<=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1090,11 +897,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii-1][jj]=='w')
+  if (d.x[ii-1][jj] == 'w')
     {
       kk=ii-1;
-      while(d.x[kk][jj]=='w')kk--;
-      if (d.x[kk][jj]=='r')
+      while(d.x[kk][jj] == 'w')kk--;
+      if (d.x[kk][jj] == 'r')
 	while(ii>=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1104,11 +911,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii+1][jj]=='w')
+  if (d.x[ii+1][jj] == 'w')
     {
       kk=ii+1;
-      while(d.x[kk][jj]=='w')kk++;
-      if (d.x[kk][jj]=='r')
+      while(d.x[kk][jj] == 'w')kk++;
+      if (d.x[kk][jj] == 'r')
 	while(ii<=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1118,11 +925,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii+1][jj-1]=='w')
+  if (d.x[ii+1][jj-1] == 'w')
     {
       kk=jj-1;ll=ii+1;
-      while(d.x[ll][kk]=='w'){kk--;ll++;}
-      if (d.x[ll][kk]=='r')
+      while(d.x[ll][kk] == 'w'){kk--;ll++;}
+      if (d.x[ll][kk] == 'r')
 	while(jj>=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1133,11 +940,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii-1][jj-1]=='w') 
+  if (d.x[ii-1][jj-1] == 'w') 
     {
       kk=jj-1;ll=ii-1;
-      while(d.x[ll][kk]=='w'){kk--;ll--;}
-      if (d.x[ll][kk]=='r') 
+      while(d.x[ll][kk] == 'w'){kk--;ll--;}
+      if (d.x[ll][kk] == 'r') 
 	while(jj>=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1148,11 +955,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii-1][jj+1]=='w') 
+  if (d.x[ii-1][jj+1] == 'w') 
     {
       kk=jj+1;ll=ii-1;
-      while(d.x[ll][kk]=='w'){kk++;ll--;}
-      if (d.x[ll][kk]=='r')
+      while(d.x[ll][kk] == 'w'){kk++;ll--;}
+      if (d.x[ll][kk] == 'r')
 	while(jj<=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1163,11 +970,11 @@ struct table rPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii+1][jj+1]=='w') 
+  if (d.x[ii+1][jj+1] == 'w') 
     {
       kk=jj+1;ll=ii+1;
-      while(d.x[ll][kk]=='w'){kk++;ll++;}
-      if (d.x[ll][kk]=='r') 
+      while(d.x[ll][kk] == 'w'){kk++;ll++;}
+      if (d.x[ll][kk] == 'r') 
 	while(jj<=kk)
 	  {
 	    d.x[ii][jj]='r';
@@ -1195,11 +1002,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii][jj-1]=='r') 
+  if (d.x[ii][jj-1] == 'r') 
     {
       kk=jj-1;
-      while(d.x[ii][kk]=='r')kk--;
-      if (d.x[ii][kk]=='w')
+      while(d.x[ii][kk] == 'r')kk--;
+      if (d.x[ii][kk] == 'w')
 	while(jj>=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1210,11 +1017,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii][jj+1]=='r')
+  if (d.x[ii][jj+1] == 'r')
     {
       kk=jj+1;
-      while(d.x[ii][kk]=='r')kk++;
-      if (d.x[ii][kk]=='w')
+      while(d.x[ii][kk] == 'r')kk++;
+      if (d.x[ii][kk] == 'w')
 	while(jj<=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1226,11 +1033,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii-1][jj]=='r')
+  if (d.x[ii-1][jj] == 'r')
     {
       kk=ii-1;
-      while(d.x[kk][jj]=='r')kk--;
-      if (d.x[kk][jj]=='w')
+      while(d.x[kk][jj] == 'r')kk--;
+      if (d.x[kk][jj] == 'w')
 	while(ii>=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1240,11 +1047,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii+1][jj]=='r')
+  if (d.x[ii+1][jj] == 'r')
     {
       kk=ii+1;
-      while(d.x[kk][jj]=='r')kk++;
-      if (d.x[kk][jj]=='w')
+      while(d.x[kk][jj] == 'r')kk++;
+      if (d.x[kk][jj] == 'w')
 	while(ii<=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1254,11 +1061,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii+1][jj-1]=='r')
+  if (d.x[ii+1][jj-1] == 'r')
     {
       kk=jj-1;ll=ii+1;
-      while(d.x[ll][kk]=='r'){kk--;ll++;}
-      if (d.x[ll][kk]=='w')
+      while(d.x[ll][kk] == 'r'){kk--;ll++;}
+      if (d.x[ll][kk] == 'w')
 	while(jj>=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1269,11 +1076,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii-1][jj-1]=='r') 
+  if (d.x[ii-1][jj-1] == 'r') 
     {
       kk=jj-1;ll=ii-1;
-      while(d.x[ll][kk]=='r'){kk--;ll--;}
-      if (d.x[ll][kk]=='w') 
+      while(d.x[ll][kk] == 'r'){kk--;ll--;}
+      if (d.x[ll][kk] == 'w') 
 	while(jj>=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1284,11 +1091,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii-1][jj+1]=='r') 
+  if (d.x[ii-1][jj+1] == 'r') 
     {
       kk=jj+1;ll=ii-1;
-      while(d.x[ll][kk]=='r'){kk++;ll--;}
-      if (d.x[ll][kk]=='w')
+      while(d.x[ll][kk] == 'r'){kk++;ll--;}
+      if (d.x[ll][kk] == 'w')
 	while(jj<=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1299,11 +1106,11 @@ struct table wPlay(int m,int n,struct table d)
 
   ii=m; jj=n;
 
-  if (d.x[ii+1][jj+1]=='r') 
+  if (d.x[ii+1][jj+1] == 'r') 
     {
       kk=jj+1;ll=ii+1;
-      while(d.x[ll][kk]=='r'){kk++;ll++;}
-      if (d.x[ll][kk]=='w') 
+      while(d.x[ll][kk] == 'r'){kk++;ll++;}
+      if (d.x[ll][kk] == 'w') 
 	while(jj<=kk)
 	  {
 	    d.x[ii][jj]='w';
@@ -1326,8 +1133,8 @@ int countDiff(struct table d)
   for (ii=1;ii<=8;ii++)
     for (jj=1;jj<=8;jj++)
       {
-   	if (d.x[ii][jj]=='w')wc++;
-   	if (d.x[ii][jj]=='r')rc++;
+   	if (d.x[ii][jj] == 'w')wc++;
+   	if (d.x[ii][jj] == 'r')rc++;
       }
   return (rc-wc);
 }
@@ -1344,22 +1151,22 @@ int wEvaluate(int tt,int m,int n,struct table d)
 
   d=wPlay(m,n,d);
 
-  if( (rValid(1,1,d)==1)||(rValid(1,8,d)==1)||(rValid(8,8,d)==1)||(rValid(8,1,d)==1)) return 30;
+  if( (rValid(1,1,d) == 1)||(rValid(1,8,d) == 1)||(rValid(8,8,d) == 1)||(rValid(8,1,d) == 1)) return 30;
 
-  if(tt==0) return countDiff(d);
+  if(tt == 0) return countDiff(d);
 
   count=0;
 
   for (ii=1;ii<=8;ii++)
     for (jj=1;jj<=8;jj++)
-      if(rValid(ii,jj,d)==1)
+      if(rValid(ii,jj,d) == 1)
 	{
 	  count++;
 	  sc=rEvaluate(tt-1,ii,jj,d);
 	  if(sc>maxsc)maxsc=sc;
 	}
 
-  if  (count==0) return countDiff(d);
+  if  (count == 0) return countDiff(d);
   else return maxsc;
 }
 
@@ -1376,22 +1183,22 @@ int rEvaluate(int tt,int m,int n,struct table d)
 
   d=rPlay(m,n,d);
 
-  if( (wValid(1,1,d)==1)||(wValid(1,8,d)==1)||(wValid(8,8,d)==1)||(wValid(8,1,d)==1)) return -30;
+  if( (wValid(1,1,d) == 1)||(wValid(1,8,d) == 1)||(wValid(8,8,d) == 1)||(wValid(8,1,d) == 1)) return -30;
 
-  if(tt==0) return countDiff(d);
+  if(tt == 0) return countDiff(d);
 
   count=0;
 
   for (ii=1;ii<=8;ii++)
     for (jj=1;jj<=8;jj++)
-      if(wValid(ii,jj,d)==1)
+      if(wValid(ii,jj,d) == 1)
 	{
 	  count++;
 	  sc=wEvaluate(tt-1,ii,jj,d);
 	  if (sc<minsc) minsc=sc;
 	}
 
-  if  (count==0)return countDiff(d);
+  if  (count == 0)return countDiff(d);
   else return minsc;
 }
 
@@ -1408,90 +1215,90 @@ void oldinput()
 
   for (i=1;i<=8;i++)
     for (j=1;j<=8;j++)
-      if (a[i][j]=='b')
+      if (a[i][j] == 'b')
 	{
 	  ct=0;
 	  t=1;
 	  ii=i;jj=j-1;/*left*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){jj--;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){jj--;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
 	  t=1;
 	  ii=i;jj=j+1;/*right*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){jj++;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){jj++;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
 	  t=1;
 	  ii=i-1;jj=j;/*up*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){ii--;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){ii--;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
 	  t=1;
 	  ii=i+1;jj=j;/*down*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){ii++;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){ii++;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
 	  t=1;
 	  ii=i+1;jj=j-1;/*LD*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){jj--;ii++;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){jj--;ii++;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
 
 	  t=1;
 	  ii=i-1;jj=j-1;/*LU*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){jj--;ii--;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){jj--;ii--;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
 
 	  t=1;
 	  ii=i+1;jj=j+1;/*RD*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){jj++;ii++;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){jj++;ii++;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
 
 	  t=1;
 	  ii=i-1;jj=j+1;/*RU*/
-	  if (a[ii][jj]=='w')
+	  if (a[ii][jj] == 'w')
 	    {
-	      while(a[ii][jj]=='w'){jj++;ii--;t++;}
-	      if(a[ii][jj]=='r')ct+=t;
+	      while(a[ii][jj] == 'w'){jj++;ii--;t++;}
+	      if(a[ii][jj] == 'r')ct+=t;
 	    }
 
 
-	  if (ct>0) { if( ((i==1)||(i==8))&&((j==1)||(j==8)) ) return;
+	  if (ct>0) { if( ((i == 1)||(i == 8))&&((j == 1)||(j == 8)) ) return;
 	    if(ct>max) {max=ct;maxi=i;maxj=j;} }
 
 	}
 
-  if (max==0) 
+  if (max == 0) 
     {
       wclear(w1);
       wprintw(w1,"No valid move");
@@ -1532,10 +1339,10 @@ void cmpInput()
     for (j=1;j<=8;j++)
       d.x[i][j]=a[i][j];
 
-  if(rValid(1,1,d)==1){i=1;j=1;return;}
-  if(rValid(8,8,d)==1){i=8;j=8;return;}
-  if(rValid(1,8,d)==1){i=1;j=8;return;}
-  if(rValid(8,1,d)==1){i=8;j=1;return;}
+  if(rValid(1,1,d) == 1){i=1;j=1;return;}
+  if(rValid(8,8,d) == 1){i=8;j=8;return;}
+  if(rValid(1,8,d) == 1){i=1;j=8;return;}
+  if(rValid(8,1,d) == 1){i=8;j=1;return;}
 
   vi=0;
   for (i=1;i<=8;i++)
@@ -1543,7 +1350,7 @@ void cmpInput()
       {
 	show();
 	mm[i][j]=100;
-	if (rValid(i,j,d)==1)
+	if (rValid(i,j,d) == 1)
 	  {
 	    vi=1;
 	    a[i][j]='*';
@@ -1555,7 +1362,7 @@ void cmpInput()
 	  if (mm[i][j]>maxi) maxi=mm[i][j];
       }
 
-  if (vi==0) 
+  if (vi == 0) 
     {
       wclear(w1);
       wprintw(w1,"No valid move");
@@ -1568,7 +1375,7 @@ void cmpInput()
 
   for (ii=1;ii<=8;ii++)
     for (jj=1;jj<=8;jj++)
-      if (mm[ii][jj]==maxi) 
+      if (mm[ii][jj] == maxi) 
 	{
 	  i=ii;j=jj;
 	}
@@ -1615,10 +1422,10 @@ int main(void)
       int ee;
       printf("\nEnter the name of the player : ");
       if (scanf("%19s", name1) != 1) return 1;
-      printf("\nLevel : [1-4] ");
+      printf("\nLevel : [1-5] ");
       if (scanf("%d", &level) != 1) level = 2;
       if (level < 1) level = 1;
-      if (level > 4) level = 4;
+      if (level > 5) level = 5; /* infinite recursion */
       {
         int ch;
         while ((ch = getchar()) != '\n' && ch != EOF)
